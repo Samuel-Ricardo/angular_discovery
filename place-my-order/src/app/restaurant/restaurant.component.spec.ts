@@ -1,29 +1,34 @@
 import {
   ComponentFixture,
-  TestBed,
   fakeAsync,
+  TestBed,
   tick,
 } from '@angular/core/testing';
-
+import { RouterTestingModule } from '@angular/router/testing';
 import { RestaurantComponent } from './restaurant.component';
 
 describe('RestaurantComponent', () => {
-  let component: RestaurantComponent;
   let fixture: ComponentFixture<RestaurantComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [RouterTestingModule],
       declarations: [RestaurantComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RestaurantComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    const component: RestaurantComponent = fixture.componentInstance;
     expect(component).toBeTruthy();
   });
+
+  it('should render title in a h2 tag', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('h2')?.textContent).toContain('Restaurants');
+  });
+
   it('should not show any restaurants markup if no restaurants', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.restaurant')).toBe(null);

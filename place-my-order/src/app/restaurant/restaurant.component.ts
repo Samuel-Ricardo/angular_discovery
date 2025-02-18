@@ -1,20 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 
-@Component({
-  selector: 'pmo-restaurant',
-  templateUrl: './restaurant.component.html',
-  styleUrl: './restaurant.component.css',
-})
-export class RestaurantComponent implements OnInit {
-  restaurants: any[] = [];
-
-  ngOnInit(): void {
-    setTimeout(() => {
-      this.restaurants = fakeRestaurants;
-    }, 500);
-  }
-}
-
 const fakeRestaurants = [
   {
     name: 'Poutine Palace',
@@ -109,3 +94,18 @@ const fakeRestaurants = [
     _id: 'Ar0qBJHxM3ecOhcr',
   },
 ];
+
+@Component({
+  selector: 'pmo-restaurant',
+  templateUrl: './restaurant.component.html',
+  styleUrl: './restaurant.component.css',
+})
+export class RestaurantComponent implements OnInit {
+  restaurants: any[] = [];
+
+  ngOnInit(): void {
+    setTimeout(() => {
+      this.restaurants = fakeRestaurants;
+    }, 500);
+  }
+}
