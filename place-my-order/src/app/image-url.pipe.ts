@@ -1,12 +1,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'imageUrl'
+  name: 'imageUrl',
 })
 export class ImageUrlPipe implements PipeTransform {
-
-  transform(value: unknown, ...args: unknown[]): unknown {
-    return null;
+  transform(value: string): string {
+    return value.replace('node_modules/place-my-order-assets', './assets');
   }
-
 }
