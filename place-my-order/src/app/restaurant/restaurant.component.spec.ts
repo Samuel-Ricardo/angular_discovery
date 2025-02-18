@@ -5,6 +5,7 @@ import {
   tick,
 } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { ImageUrlPipe } from '../image-url.pipe';
 import { RestaurantComponent } from './restaurant.component';
 
 describe('RestaurantComponent', () => {
@@ -13,7 +14,7 @@ describe('RestaurantComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [RouterTestingModule],
-      declarations: [RestaurantComponent],
+      declarations: [RestaurantComponent, ImageUrlPipe],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RestaurantComponent);
