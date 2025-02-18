@@ -7,8 +7,9 @@ import { environment } from '../../environments/environment';
   providedIn: 'root',
 })
 export class RestaurantService {
-  getRestaurants(): any {
-    throw new Error('Method not implemented.');
+  constructor(private httpClient: HttpClient) {}
+
+  getRestaurants(): Observable<any> {
+    return this.httpClient.get<any>(environment.apiUrl + '/restaurants');
   }
-  constructor() {}
 }
