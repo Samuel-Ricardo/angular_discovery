@@ -9,6 +9,7 @@ import { HomeComponent } from './home/home.component';
 import { RestaurantComponent } from './restaurant/restaurant.component';
 import { ImageUrlPipe } from './image-url.pipe';
 import { DetailComponent } from './restaurant/detail/detail.component';
+import { OrderComponent } from './order/order.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { DetailComponent } from './restaurant/detail/detail.component';
     RestaurantComponent,
     ImageUrlPipe,
     DetailComponent,
+    OrderComponent,
   ],
   imports: [
     BrowserModule,
