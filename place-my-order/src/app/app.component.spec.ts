@@ -15,6 +15,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { ImageUrlPipe } from './image-url.pipe';
+import { DetailComponent } from './restaurant/detail/detail.component';
 import { RestaurantComponent } from './restaurant/restaurant.component';
 import { RestaurantService } from './restaurant/restaurant.service';
 
@@ -202,6 +203,7 @@ describe('AppComponent', () => {
         HomeComponent,
         RestaurantComponent,
         ImageUrlPipe,
+        DetailComponent,
       ],
       providers: [
         { provide: RestaurantService, useClass: MockRestaurantService },
@@ -251,6 +253,15 @@ describe('AppComponent', () => {
     router.navigate(['restaurants']).then(() => {
       expect(location.path()).toBe('/restaurants');
       expect(compiled.querySelector('pmo-restaurant')).not.toBe(null);
+    });
+  }));
+
+  it('should render the DetailComponent with router navigates to "/restaurants/slug" path', fakeAsync(() => {
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    router.navigate(['restaurants/crab-shack']).then(() => {
+      expect(location.path()).toBe('/restaurants/crab-shack');
+      expect(compiled.querySelector('pmo-detail')).not.toBe(null);
     });
   }));
 
