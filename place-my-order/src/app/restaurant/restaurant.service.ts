@@ -50,4 +50,10 @@ export class RestaurantService {
       { params },
     );
   }
+
+  getRestaurant(slug: string): Observable<Restaurant> {
+    return this.httpClient.get<Restaurant>(
+      environment.apiUrl + '/restaurants/' + slug,
+    );
+  }
 }
