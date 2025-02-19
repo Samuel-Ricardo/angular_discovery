@@ -1,7 +1,8 @@
 <div class="restaurants">
   <h2 class="page-header">Restaurants</h2>
-  <ng-container *ngIf="restaurants.length">
-    <div class="restaurant" *ngFor="let restaurant of restaurants">
+  <div class="restaurant loading" *ngIf="restaurants.isPending"></div>
+  <ng-container *ngIf="restaurants.value.length">
+    <div class="restaurant" *ngFor="let restaurant of restaurants.value">
       <img
         alt=""
         src="{{ restaurant.images.thumbnail | imageUrl }}"
