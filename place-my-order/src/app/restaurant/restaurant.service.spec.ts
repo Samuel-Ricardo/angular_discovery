@@ -1,270 +1,103 @@
 import {
-  ComponentFixture,
-  fakeAsync,
-  TestBed,
-  tick,
-} from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
-import { ImageUrlPipe } from '../image-url.pipe';
-import { RestaurantComponent } from './restaurant.component';
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+
 import { RestaurantService } from './restaurant.service';
 
-class MockRestaurantService {
-  getRestaurants() {
-    return of({
+describe('RestaurantService', () => {
+  let httpTestingController: HttpTestingController;
+  let service: RestaurantService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [RestaurantService],
+    });
+
+    httpTestingController = TestBed.inject(HttpTestingController);
+    service = TestBed.inject(RestaurantService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+
+  it('should make a GET request to restaurants', () => {
+    const mockRestaurants = {
       data: [
         {
-          name: 'Poutine Palace',
-          slug: 'poutine-palace',
+          name: 'Brunch Place',
+          slug: 'brunch-place',
           images: {
             thumbnail:
               'node_modules/place-my-order-assets/images/4-thumbnail.jpg',
-            owner: 'node_modules/place-my-order-assets/images/3-owner.jpg',
+            owner: 'node_modules/place-my-order-assets/images/2-owner.jpg',
             banner: 'node_modules/place-my-order-assets/images/2-banner.jpg',
           },
           menu: {
             lunch: [
-              {
-                name: 'Crab Pancakes with Sorrel Syrup',
-                price: 35.99,
-              },
-              {
-                name: 'Steamed Mussels',
-                price: 21.99,
-              },
-              {
-                name: 'Spinach Fennel Watercress Ravioli',
-                price: 35.99,
-              },
+              { name: 'Ricotta Gnocchi', price: 15.99 },
+              { name: 'Garlic Fries', price: 15.99 },
+              { name: 'Charred Octopus', price: 25.99 },
             ],
             dinner: [
-              {
-                name: 'Gunthorp Chicken',
-                price: 21.99,
-              },
-              {
-                name: 'Herring in Lavender Dill Reduction',
-                price: 45.99,
-              },
-              {
-                name: 'Chicken with Tomato Carrot Chutney Sauce',
-                price: 45.99,
-              },
-            ],
-          },
-          address: {
-            street: '230 W Kinzie Street',
-            city: 'Green Bay',
-            state: 'WI',
-            zip: '53205',
-          },
-          _id: '3ZOZyTY1LH26LnVw',
-        },
-        {
-          name: 'Cheese Curd City',
-          slug: 'cheese-curd-city',
-          images: {
-            thumbnail:
-              'node_modules/place-my-order-assets/images/2-thumbnail.jpg',
-            owner: 'node_modules/place-my-order-assets/images/3-owner.jpg',
-            banner: 'node_modules/place-my-order-assets/images/2-banner.jpg',
-          },
-          menu: {
-            lunch: [
-              {
-                name: 'Ricotta Gnocchi',
-                price: 15.99,
-              },
-              {
-                name: 'Gunthorp Chicken',
-                price: 21.99,
-              },
-              {
-                name: 'Garlic Fries',
-                price: 15.99,
-              },
-            ],
-            dinner: [
-              {
-                name: 'Herring in Lavender Dill Reduction',
-                price: 45.99,
-              },
-              {
-                name: 'Truffle Noodles',
-                price: 14.99,
-              },
-              {
-                name: 'Charred Octopus',
-                price: 25.99,
-              },
+              { name: 'Steamed Mussels', price: 21.99 },
+              { name: 'Roasted Salmon', price: 23.99 },
+              { name: 'Crab Pancakes with Sorrel Syrup', price: 35.99 },
             ],
           },
           address: {
             street: '2451 W Washburne Ave',
-            city: 'Green Bay',
-            state: 'WI',
+            city: 'Ann Arbor',
+            state: 'MI',
             zip: '53295',
           },
-          _id: 'Ar0qBJHxM3ecOhcr',
+          _id: 'xugqxQIX5rPJTLBv',
+        },
+        {
+          name: 'Taco Joint',
+          slug: 'taco-joint',
+          images: {
+            thumbnail:
+              'node_modules/place-my-order-assets/images/4-thumbnail.jpg',
+            owner: 'node_modules/place-my-order-assets/images/2-owner.jpg',
+            banner: 'node_modules/place-my-order-assets/images/2-banner.jpg',
+          },
+          menu: {
+            lunch: [
+              { name: 'Beef Tacos', price: 15.99 },
+              { name: 'Chicken Tacos', price: 15.99 },
+              { name: 'Guacamole', price: 25.99 },
+            ],
+            dinner: [
+              { name: 'Shrimp Tacos', price: 21.99 },
+              { name: 'Chicken Enchilada', price: 23.99 },
+              { name: 'Elotes', price: 35.99 },
+            ],
+          },
+          address: {
+            street: '13 N 21st St',
+            city: 'Chicago',
+            state: 'IL',
+            zip: '53295',
+          },
+          _id: 'xugqxQIX5dfgdgTLBv',
         },
       ],
+    };
+
+    service.getRestaurants().subscribe((restaurants: any) => {
+      expect(restaurants).toEqual(mockRestaurants);
     });
-  }
-}
 
-describe('RestaurantComponent', () => {
-  let fixture: ComponentFixture<RestaurantComponent>;
+    const url = 'http://localhost:7070/restaurants';
+    const req = httpTestingController.expectOne(url);
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      declarations: [RestaurantComponent, ImageUrlPipe],
-      providers: [
-        { provide: RestaurantService, useClass: MockRestaurantService },
-      ],
-    }).compileComponents();
+    expect(req.request.method).toEqual('GET');
+    req.flush(mockRestaurants);
 
-    fixture = TestBed.createComponent(RestaurantComponent);
+    httpTestingController.verify();
   });
-
-  it('should create', () => {
-    const component: RestaurantComponent = fixture.componentInstance;
-    expect(component).toBeTruthy();
-  });
-
-  it('should render title in a h2 tag', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h2')?.textContent).toContain('Restaurants');
-  });
-
-  it('should not show any restaurants markup if no restaurants', () => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.restaurant')).toBe(null);
-  });
-
-  it('should have two .restaurant divs', fakeAsync((): void => {
-    fixture.detectChanges();
-    tick(501);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    const restaurantDivs = compiled.getElementsByClassName('restaurant');
-    const hoursDivs = compiled.getElementsByClassName('hours-price');
-    expect(restaurantDivs.length).toEqual(2);
-    expect(hoursDivs.length).toEqual(2);
-  }));
-
-  it('should display restaurant information', fakeAsync((): void => {
-    fixture.detectChanges();
-    tick(501);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.restaurant h3')?.textContent).toContain(
-      'Poutine Palace',
-    );
-  }));
-
-  it('should set restaurants member to response of getRestaurants method', fakeAsync((): void => {
-    const fixture = TestBed.createComponent(RestaurantComponent);
-    fixture.detectChanges();
-    tick();
-    fixture.detectChanges();
-    const expectedRestaurants = [
-      {
-        name: 'Poutine Palace',
-        slug: 'poutine-palace',
-        images: {
-          thumbnail:
-            'node_modules/place-my-order-assets/images/4-thumbnail.jpg',
-          owner: 'node_modules/place-my-order-assets/images/3-owner.jpg',
-          banner: 'node_modules/place-my-order-assets/images/2-banner.jpg',
-        },
-        menu: {
-          lunch: [
-            {
-              name: 'Crab Pancakes with Sorrel Syrup',
-              price: 35.99,
-            },
-            {
-              name: 'Steamed Mussels',
-              price: 21.99,
-            },
-            {
-              name: 'Spinach Fennel Watercress Ravioli',
-              price: 35.99,
-            },
-          ],
-          dinner: [
-            {
-              name: 'Gunthorp Chicken',
-              price: 21.99,
-            },
-            {
-              name: 'Herring in Lavender Dill Reduction',
-              price: 45.99,
-            },
-            {
-              name: 'Chicken with Tomato Carrot Chutney Sauce',
-              price: 45.99,
-            },
-          ],
-        },
-        address: {
-          street: '230 W Kinzie Street',
-          city: 'Green Bay',
-          state: 'WI',
-          zip: '53205',
-        },
-        _id: '3ZOZyTY1LH26LnVw',
-      },
-      {
-        name: 'Cheese Curd City',
-        slug: 'cheese-curd-city',
-        images: {
-          thumbnail:
-            'node_modules/place-my-order-assets/images/2-thumbnail.jpg',
-          owner: 'node_modules/place-my-order-assets/images/3-owner.jpg',
-          banner: 'node_modules/place-my-order-assets/images/2-banner.jpg',
-        },
-        menu: {
-          lunch: [
-            {
-              name: 'Ricotta Gnocchi',
-              price: 15.99,
-            },
-            {
-              name: 'Gunthorp Chicken',
-              price: 21.99,
-            },
-            {
-              name: 'Garlic Fries',
-              price: 15.99,
-            },
-          ],
-          dinner: [
-            {
-              name: 'Herring in Lavender Dill Reduction',
-              price: 45.99,
-            },
-            {
-              name: 'Truffle Noodles',
-              price: 14.99,
-            },
-            {
-              name: 'Charred Octopus',
-              price: 25.99,
-            },
-          ],
-        },
-        address: {
-          street: '2451 W Washburne Ave',
-          city: 'Green Bay',
-          state: 'WI',
-          zip: '53295',
-        },
-        _id: 'Ar0qBJHxM3ecOhcr',
-      },
-    ];
-    expect(fixture.componentInstance.restaurants).toEqual(expectedRestaurants);
-  }));
 });
