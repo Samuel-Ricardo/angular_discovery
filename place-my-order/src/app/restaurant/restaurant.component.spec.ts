@@ -1,21 +1,14 @@
-import { Location } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import {
   ComponentFixture,
   fakeAsync,
-  flush,
   TestBed,
   tick,
 } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
-import { ImageUrlPipe } from './image-url.pipe';
-import { RestaurantComponent } from './restaurant/restaurant.component';
-import { RestaurantService } from './restaurant/restaurant.service';
+import { ImageUrlPipe } from '../image-url.pipe';
+import { RestaurantComponent } from './restaurant.component';
+import { RestaurantService } from './restaurant.service';
 
 class MockRestaurantService {
   getRestaurants() {
@@ -118,177 +111,181 @@ class MockRestaurantService {
       ],
     });
   }
-
-  getStates() {
-    return of({
-      data: [
-        { short: 'MO', name: 'Missouri' },
-        { short: 'CA  ', name: 'California' },
-        { short: 'MI', name: 'Michigan' },
-      ],
-    });
-  }
-
-  getCities(state: string) {
-    return of({
-      data: [
-        { name: 'Sacramento', state: 'CA' },
-        { name: 'Oakland', state: 'CA' },
-      ],
-    });
-  }
-
-  getRestaurant(slug: string) {
-    return of({
-      name: 'Poutine Palace',
-      slug: 'poutine-palace',
-      images: {
-        thumbnail: 'node_modules/place-my-order-assets/images/4-thumbnail.jpg',
-        owner: 'node_modules/place-my-order-assets/images/3-owner.jpg',
-        banner: 'node_modules/place-my-order-assets/images/2-banner.jpg',
-      },
-      menu: {
-        lunch: [
-          {
-            name: 'Crab Pancakes with Sorrel Syrup',
-            price: 35.99,
-          },
-          {
-            name: 'Steamed Mussels',
-            price: 21.99,
-          },
-          {
-            name: 'Spinach Fennel Watercress Ravioli',
-            price: 35.99,
-          },
-        ],
-        dinner: [
-          {
-            name: 'Gunthorp Chicken',
-            price: 21.99,
-          },
-          {
-            name: 'Herring in Lavender Dill Reduction',
-            price: 45.99,
-          },
-          {
-            name: 'Chicken with Tomato Carrot Chutney Sauce',
-            price: 45.99,
-          },
-        ],
-      },
-      address: {
-        street: '230 W Kinzie Street',
-        city: 'Green Bay',
-        state: 'WI',
-        zip: '53205',
-      },
-      _id: '3ZOZyTY1LH26LnVw',
-    });
-  }
 }
 
-describe('AppComponent', () => {
-  let fixture: ComponentFixture<AppComponent>;
-  let location: Location;
-  let router: Router;
+describe('RestaurantComponent', () => {
+  let fixture: ComponentFixture<RestaurantComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppRoutingModule, HttpClientModule],
-      declarations: [
-        AppComponent,
-        HomeComponent,
-        RestaurantComponent,
-        ImageUrlPipe,
-      ],
+      imports: [RouterTestingModule],
+      declarations: [RestaurantComponent, ImageUrlPipe],
       providers: [
         { provide: RestaurantService, useClass: MockRestaurantService },
       ],
-      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AppComponent);
-    location = TestBed.inject(Location);
-    router = TestBed.inject(Router);
+    fixture = TestBed.createComponent(RestaurantComponent);
   });
 
-  it('should create the app', () => {
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+  it('should create', () => {
+    const component: RestaurantComponent = fixture.componentInstance;
+    expect(component).toBeTruthy();
   });
 
-  it(`should have as title 'place-my-order'`, () => {
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('place-my-order');
+  it('should render title in a h2 tag', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('h2')?.textContent).toContain('Restaurants');
   });
 
-  it('should render title in a h1 tag', () => {
+  it('should not show any restaurants markup if no restaurants', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.restaurant')).toBe(null);
+  });
+
+  it('should have two .restaurant divs', fakeAsync((): void => {
+    fixture.detectChanges();
+    tick(501);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain(
-      'place-my-order.com',
+    const restaurantDivs = compiled.getElementsByClassName('restaurant');
+    const hoursDivs = compiled.getElementsByClassName('hours-price');
+    expect(restaurantDivs.length).toEqual(2);
+    expect(hoursDivs.length).toEqual(2);
+  }));
+
+  it('should display restaurant information', fakeAsync((): void => {
+    fixture.detectChanges();
+    tick(501);
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('.restaurant h3')?.textContent).toContain(
+      'Poutine Palace',
     );
-  });
-
-  it('should render the HomeComponent with router navigates to "/" path', fakeAsync(() => {
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    router.navigate(['']).then(() => {
-      expect(location.path()).toBe('');
-      expect(compiled.querySelector('pmo-home')).not.toBe(null);
-    });
   }));
 
-  it('should render the RestaurantsComponent with router navigates to "/restaurants" path', fakeAsync(() => {
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    router.navigate(['restaurants']).then(() => {
-      expect(location.path()).toBe('/restaurants');
-      expect(compiled.querySelector('pmo-restaurant')).not.toBe(null);
-    });
-  }));
-
-  it('should have the home navigation link href set to "/"', () => {
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    const homeLink = compiled.querySelector('li a');
-    const href = homeLink?.getAttribute('href');
-    expect(href).toEqual('/');
-  });
-
-  it('should have the restaurants navigation link href set to "/restaurants"', () => {
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    const restaurantsLink = compiled.querySelector('li:nth-child(2) a');
-    const href = restaurantsLink?.getAttribute('href');
-    expect(href).toEqual('/restaurants');
-  });
-
-  it('should make the home navigation link class active when the router navigates to "/" path', fakeAsync(() => {
-    const compiled = fixture.nativeElement as HTMLElement;
-    router.navigate(['']);
+  it('should set restaurants value to restaurants response data and set isPending to false', fakeAsync((): void => {
+    const fixture = TestBed.createComponent(RestaurantComponent);
     fixture.detectChanges();
     tick();
     fixture.detectChanges();
-
-    const homeLinkLi = compiled.querySelector('li');
-    expect(homeLinkLi?.classList).toContain('active');
-    expect(compiled.querySelectorAll('.active').length).toBe(1);
-    flush();
+    const expectedRestaurants = {
+      value: [
+        {
+          name: 'Poutine Palace',
+          slug: 'poutine-palace',
+          images: {
+            thumbnail:
+              'node_modules/place-my-order-assets/images/4-thumbnail.jpg',
+            owner: 'node_modules/place-my-order-assets/images/3-owner.jpg',
+            banner: 'node_modules/place-my-order-assets/images/2-banner.jpg',
+          },
+          menu: {
+            lunch: [
+              {
+                name: 'Crab Pancakes with Sorrel Syrup',
+                price: 35.99,
+              },
+              {
+                name: 'Steamed Mussels',
+                price: 21.99,
+              },
+              {
+                name: 'Spinach Fennel Watercress Ravioli',
+                price: 35.99,
+              },
+            ],
+            dinner: [
+              {
+                name: 'Gunthorp Chicken',
+                price: 21.99,
+              },
+              {
+                name: 'Herring in Lavender Dill Reduction',
+                price: 45.99,
+              },
+              {
+                name: 'Chicken with Tomato Carrot Chutney Sauce',
+                price: 45.99,
+              },
+            ],
+          },
+          address: {
+            street: '230 W Kinzie Street',
+            city: 'Green Bay',
+            state: 'WI',
+            zip: '53205',
+          },
+          _id: '3ZOZyTY1LH26LnVw',
+        },
+        {
+          name: 'Cheese Curd City',
+          slug: 'cheese-curd-city',
+          images: {
+            thumbnail:
+              'node_modules/place-my-order-assets/images/2-thumbnail.jpg',
+            owner: 'node_modules/place-my-order-assets/images/3-owner.jpg',
+            banner: 'node_modules/place-my-order-assets/images/2-banner.jpg',
+          },
+          menu: {
+            lunch: [
+              {
+                name: 'Ricotta Gnocchi',
+                price: 15.99,
+              },
+              {
+                name: 'Gunthorp Chicken',
+                price: 21.99,
+              },
+              {
+                name: 'Garlic Fries',
+                price: 15.99,
+              },
+            ],
+            dinner: [
+              {
+                name: 'Herring in Lavender Dill Reduction',
+                price: 45.99,
+              },
+              {
+                name: 'Truffle Noodles',
+                price: 14.99,
+              },
+              {
+                name: 'Charred Octopus',
+                price: 25.99,
+              },
+            ],
+          },
+          address: {
+            street: '2451 W Washburne Ave',
+            city: 'Green Bay',
+            state: 'WI',
+            zip: '53295',
+          },
+          _id: 'Ar0qBJHxM3ecOhcr',
+        },
+      ],
+      isPending: false,
+    };
+    expect(fixture.componentInstance.restaurants).toEqual(expectedRestaurants);
   }));
 
-  it('should make the restaurants navigation link class active when the router navigates to "/restaurants" path', fakeAsync(() => {
+  it('should show a loading div while isPending is true', () => {
+    fixture.detectChanges();
+    fixture.componentInstance.restaurants.isPending = true;
+    fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    router.navigate(['restaurants']);
-    fixture.detectChanges();
-    tick();
-    fixture.detectChanges();
+    const loadingDiv = compiled.querySelector('.loading');
+    expect(loadingDiv).toBeTruthy();
+  });
 
-    expect(location.path()).toBe('/restaurants');
-    const restaurantsLinkLi = compiled.querySelector('li:nth-child(2)');
-    expect(restaurantsLinkLi?.classList).toContain('active');
-    expect(compiled.querySelectorAll('.active').length).toBe(1);
-    flush();
-  }));
+  it('should not show a loading div if isPending is false', () => {
+    fixture.detectChanges();
+    fixture.componentInstance.restaurants.isPending = false;
+    fixture.detectChanges();
+    const compiled = fixture.nativeElement as HTMLElement;
+    const loadingDiv = compiled.querySelector('.loading');
+    expect(loadingDiv).toBe(null);
+  });
 });
