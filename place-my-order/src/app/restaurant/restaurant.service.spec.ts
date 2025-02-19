@@ -4,7 +4,12 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Restaurant } from './restaurant';
-import { ResponseData, RestaurantService } from './restaurant.service';
+import {
+  City,
+  ResponseData,
+  RestaurantService,
+  State,
+} from './restaurant.service';
 
 describe('RestaurantService', () => {
   let httpTestingController: HttpTestingController;
@@ -88,12 +93,15 @@ describe('RestaurantService', () => {
     };
 
     service
-      .getRestaurants()
+      .getRestaurants('IL', 'Chicago')
       .subscribe((restaurants: ResponseData<Restaurant>) => {
         expect(restaurants).toEqual(mockRestaurants);
       });
 
-    const url = 'http://localhost:7070/restaurants';
+    const url =
+      'http://localhost:7070/restaurants?filter%5Baddress.state%5D=IL&filter%5Baddress.city%5D=Chicago';
+    // url parses to 'http://localhost:7070/restaurants?filter[address.state]=IL&filter[address.city]=Chicago'
+
     const req = httpTestingController.expectOne(url);
 
     expect(req.request.method).toEqual('GET');
@@ -140,7 +148,7 @@ describe('RestaurantService', () => {
       data: [{ name: 'Missouri', short: 'MO' }],
     };
 
-    service.getStates().subscribe((states) => {
+    service.getStates().subscribe((states: ResponseData<State>) => {
       expect(states).toEqual(mockStates);
     });
 
@@ -158,7 +166,7 @@ describe('RestaurantService', () => {
       data: [{ name: 'Kansas City', state: 'MO' }],
     };
 
-    service.getCities('MO').subscribe((cities: any) => {
+    service.getCities('MO').subscribe((cities: ResponseData<City>) => {
       expect(cities).toEqual(mockCities);
     });
 
