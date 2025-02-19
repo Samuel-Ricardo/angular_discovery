@@ -1,30 +1,30 @@
-export interface ImageUrls {
-  thumbnail: string;
-  owner: string;
-  banner: string;
-}
-
-export interface MenuItem {
+interface Item {
   name: string;
   price: number;
 }
 
-export interface Menu {
-  lunch: MenuItem[];
-  dinner: MenuItem[];
+interface Menu {
+  lunch: Item[];
+  dinner: Item[];
 }
 
-export interface Address {
+interface Address {
   street: string;
   city: string;
   state: string;
   zip: string;
 }
 
+interface Images {
+  thumbnail: string;
+  owner: string;
+  banner: string;
+}
+
 export interface Restaurant {
   name: string;
   slug: string;
-  images: ImageUrls;
+  images: Images;
   menu: Menu;
   address: Address;
   _id: string;
