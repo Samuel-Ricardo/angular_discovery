@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -18,5 +18,14 @@ export class RestaurantService {
     return this.httpClient.get<ResponseData>(
       environment.apiUrl + '/restaurants',
     );
+  }
+
+  getStates(): Observable<any> {
+    return this.httpClient.get<any>(environment.apiUrl + '/states');
+  }
+
+  getCities(state: string): Observable<any> {
+    const params = new HttpParams().set('state', state);
+    return this.httpClient.get<any>(environment.apiUrl + '/cities', { params });
   }
 }
