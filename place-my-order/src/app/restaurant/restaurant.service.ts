@@ -4,8 +4,8 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Restaurant } from './restaurant';
 
-export interface ResponseData {
-  data: Restaurant[];
+export interface ResponseData<DataType> {
+  data: DataType[];
 }
 
 export interface State {
@@ -24,18 +24,23 @@ export interface City {
 export class RestaurantService {
   constructor(private httpClient: HttpClient) {}
 
-  getRestaurants(): Observable<ResponseData> {
-    return this.httpClient.get<ResponseData>(
+  getRestaurants(): Observable<ResponseData<Restaurant>> {
+    return this.httpClient.get<ResponseData<Restaurant>>(
       environment.apiUrl + '/restaurants',
     );
   }
 
-  getStates(): Observable<any> {
-    return this.httpClient.get<any>(environment.apiUrl + '/states');
+  getStates(): Observable<ResponseData<State>> {
+    return this.httpClient.get<ResponseData<State>>(
+      environment.apiUrl + '/states',
+    );
   }
 
-  getCities(state: string): Observable<any> {
+  getCities(state: string): Observable<ResponseData<City>> {
     const params = new HttpParams().set('state', state);
-    return this.httpClient.get<any>(environment.apiUrl + '/cities', { params });
+    return this.httpClient.get<ResponseData<City>>(
+      environment.apiUrl + '/cities',
+      { params },
+    );
   }
 }
