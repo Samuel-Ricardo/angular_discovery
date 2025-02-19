@@ -8,6 +8,7 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
 import { AppRoutingModule } from './app-routing.module';
@@ -195,7 +196,7 @@ describe('AppComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppRoutingModule, HttpClientModule],
+      imports: [AppRoutingModule, HttpClientModule, ReactiveFormsModule],
       declarations: [
         AppComponent,
         HomeComponent,
@@ -206,7 +207,11 @@ describe('AppComponent', () => {
         { provide: RestaurantService, useClass: MockRestaurantService },
       ],
       schemas: [NO_ERRORS_SCHEMA],
-    }).compileComponents();
+    })
+      .overrideComponent(RestaurantComponent, {
+        set: { template: '<p>I am a fake restaurant component</p>' },
+      })
+      .compileComponents();
 
     fixture = TestBed.createComponent(AppComponent);
     location = TestBed.inject(Location);
