@@ -87,9 +87,11 @@ describe('RestaurantService', () => {
       ],
     };
 
-    service.getRestaurants().subscribe((restaurants: ResponseData) => {
-      expect(restaurants).toEqual(mockRestaurants);
-    });
+    service
+      .getRestaurants()
+      .subscribe((restaurants: ResponseData<Restaurant>) => {
+        expect(restaurants).toEqual(mockRestaurants);
+      });
 
     const url = 'http://localhost:7070/restaurants';
     const req = httpTestingController.expectOne(url);
@@ -156,7 +158,7 @@ describe('RestaurantService', () => {
       data: [{ name: 'Kansas City', state: 'MO' }],
     };
 
-    service.getCities('MO').subscribe((cities) => {
+    service.getCities('MO').subscribe((cities: any) => {
       expect(cities).toEqual(mockCities);
     });
 
