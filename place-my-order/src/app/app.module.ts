@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { RestaurantComponent } from './restaurant/restaurant.component';
 import { ImageUrlPipe } from './image-url.pipe';
+import { DetailComponent } from './restaurant/detail/detail.component';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { ImageUrlPipe } from './image-url.pipe';
     HomeComponent,
     RestaurantComponent,
     ImageUrlPipe,
+    DetailComponent,
   ],
   imports: [
     BrowserModule,
