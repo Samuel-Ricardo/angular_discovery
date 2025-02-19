@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
 import { Restaurant } from './restaurant';
 import { ResponseData, RestaurantService } from './restaurant.service';
 
@@ -13,7 +14,7 @@ export interface Data {
   templateUrl: './restaurant.component.html',
   styleUrl: './restaurant.component.css',
 })
-export class RestaurantComponent implements OnInit {
+export class RestaurantComponent implements OnInit, OnDestroy {
   form: FormGroup<{
     state: FormControl<string>;
     city: FormControl<string>;
@@ -37,6 +38,8 @@ export class RestaurantComponent implements OnInit {
     value: [{ name: 'Springfield' }, { name: 'Madison' }],
   };
 
+  private onDestroy$ = new Subject<void>();
+
   constructor(
     private restaurantService: RestaurantService,
     private fb: FormBuilder,
@@ -44,10 +47,30 @@ export class RestaurantComponent implements OnInit {
 
   ngOnInit(): void {
     this.restaurants.isPending = true;
-    this.restaurantService.getRestaurants().subscribe((res: ResponseData) => {
-      this.restaurants.value = res.data;
-      this.restaurants.isPending = false;
-    });
+    this.restaurantService
+      .getRestaurants()
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe((res: ResponseData) => {
+        this.restaurants.value = res.data;
+        this.restaurants.isPending = false;
+      });
+
+    this.form.controls.state.valueChanges
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe((value) => {
+        console.info('state', value);
+      });
+
+    this.form.controls.city.valueChanges
+      .pipe(takeUntil(this.onDestroy$))
+      .subscribe((value) => {
+        console.info('city', value);
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.onDestroy$.next();
+    this.onDestroy$.complete();
   }
 
   createForm(): FormGroup<{
