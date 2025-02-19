@@ -8,6 +8,16 @@ export interface ResponseData {
   data: Restaurant[];
 }
 
+export interface State {
+  name: string;
+  short: string;
+}
+
+export interface City {
+  name: string;
+  state: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
